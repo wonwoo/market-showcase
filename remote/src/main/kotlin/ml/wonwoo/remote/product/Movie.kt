@@ -1,13 +1,9 @@
 package ml.wonwoo.remote.product
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
 import java.util.UUID
 
-@Document
 data class Movie(
 
-    @Id
     val id: String,
 
     val name: String,
