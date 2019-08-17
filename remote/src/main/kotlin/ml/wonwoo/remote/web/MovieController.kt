@@ -1,33 +1,32 @@
 package ml.wonwoo.remote.web
 
-import ml.wonwoo.remote.product.History
-import ml.wonwoo.remote.product.HistoryRepository
+import ml.wonwoo.remote.HistoryEvent
 import ml.wonwoo.remote.product.Movie
 import ml.wonwoo.remote.product.MovieRepository
 import ml.wonwoo.remote.product.ProductType
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/movies")
 class MovieController(private val movieRepository: MovieRepository,
-                      private val historyRepository: HistoryRepository) {
+                      private val applicationEventPublisher: ApplicationEventPublisher) {
 
     @GetMapping
     fun movies(name: String): Flux<MovieDto> {
-        val movies = movieRepository.findByName(name)
+
+        return movieRepository.findByName(name)
 
             .map { it.dto() }
 
-        val history = historyRepository.save(
-            History(name = name, productType = ProductType.MOVIE, registerTime = LocalDateTime.now()))
+            .doOnComplete {
 
-        return Flux.zip(movies, history)
+                applicationEventPublisher.publishEvent(HistoryEvent(name = name, productType = ProductType.MOVIE))
 
-            .map { it.t1 }
+            }
     }
 
 }
