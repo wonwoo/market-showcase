@@ -21,11 +21,8 @@ class MovieController(private val movieRepository: MovieRepository,
         return movieRepository.findByName(name)
 
             .map { it.dto() }
-
             .doOnComplete {
-
                 applicationEventPublisher.publishEvent(HistoryEvent(name = name, productType = ProductType.MOVIE))
-
             }
     }
 

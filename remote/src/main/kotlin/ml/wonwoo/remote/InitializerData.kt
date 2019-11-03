@@ -26,15 +26,10 @@ class InitializerData(
         reactiveMongoTemplate.createCollection("history",
 
             CollectionOptions.empty().size(1024).maxDocuments(5).capped())
-
             .then(bookRepository.save(Book(name = "Effective Java", image = "http://localhost:8080", author = "Joshua Bloch")))
-
             .then(bookRepository.save(Book(name = "Back to the Future", image = "http://localhost:8080", author = "Michael Klastorin")))
-
             .then(bookRepository.save(Book(name = "Back to the Future", image = "http://localhost:8080", author = "Michael Klastorin")))
-
             .then(movieRepository.save(Movie(name = "Back to the Future", image = "http://localhost:8080", genre = "SF")))
-
             .subscribe()
 
     }

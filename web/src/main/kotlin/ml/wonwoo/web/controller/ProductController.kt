@@ -13,11 +13,11 @@ class ProductController(private val productClient: ProductClient) {
     private val histories =  productClient.histories()
 
     @GetMapping("/")
-    fun products(): Mono<Product> {
+    fun products(name: String): Mono<Product> {
 
-        val books = productClient.books()
+        val books = productClient.books(name)
 
-        val movies = productClient.movies()
+        val movies = productClient.movies(name)
 
         return Mono.zip(books, movies)
             .map { Product(it.t1, it.t2) }

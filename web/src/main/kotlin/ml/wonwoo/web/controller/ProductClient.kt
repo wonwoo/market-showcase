@@ -15,18 +15,18 @@ class ProductClient(private val productProperties: ProductProperties,
     private val webClient: WebClient = builder.baseUrl(productProperties.host).build()
 
 
-    fun books(): Mono<List<Book>> =
+    fun books(name: String): Mono<List<Book>> =
         webClient
             .get()
-            .uri(productProperties.book)
+            .uri("${productProperties.book}?name=$name")
             .retrieve()
             .bodyToMono()
 
 
-    fun movies(): Mono<List<Movie>> =
+    fun movies(name: String): Mono<List<Movie>> =
         webClient
             .get()
-            .uri(productProperties.movie)
+            .uri("${productProperties.movie}?name=$name")
             .retrieve()
             .bodyToMono()
 

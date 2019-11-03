@@ -21,14 +21,9 @@ class BookController(private val bookRepository: BookRepository,
         return bookRepository.findByName(name)
 
             .map { it.dto() }
-
             .doOnComplete {
-
                 applicationEventPublisher.publishEvent(HistoryEvent(name = name, productType = ProductType.MOVIE))
-
             }
-
-
     }
 }
 
