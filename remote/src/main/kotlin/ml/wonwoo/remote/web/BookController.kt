@@ -22,7 +22,7 @@ class BookController(private val bookRepository: BookRepository,
 
             .map { it.dto() }
             .doOnComplete {
-                applicationEventPublisher.publishEvent(HistoryEvent(name = name, productType = ProductType.MOVIE))
+                applicationEventPublisher.publishEvent(HistoryEvent(name = name, productType = ProductType.BOOK))
             }
     }
 }
