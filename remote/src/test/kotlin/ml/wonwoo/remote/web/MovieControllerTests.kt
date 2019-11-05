@@ -19,6 +19,8 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBodyList
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
+import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -37,14 +39,14 @@ internal class MovieControllerTests(private val webTestClient: WebTestClient) {
     fun setup() {
         val history = History(name = "book", productType = ProductType.BOOK, registerTime = LocalDateTime.now())
         given(historyRepository.save(any<History>()))
-            .willReturn(Mono.just(history))
+            .willReturn(history.toMono())
     }
 
     @Test
     fun `movies test`() {
 
         given(movieRepository.findByName("movie"))
-            .willReturn(Flux.just(Movie(id = UUID.randomUUID().toString(), name = "testmovie", image = "http://test.com/1", genre = "SF")))
+            .willReturn(listOf(Movie(id = UUID.randomUUID().toString(), name = "testmovie", image = "http://test.com/1", genre = "SF")).toFlux())
 
         webTestClient.get().uri {
 

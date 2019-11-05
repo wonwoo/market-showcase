@@ -11,10 +11,6 @@ import java.time.Duration
 infix fun <T : AbstractStringAssert<out T>> AbstractStringAssert<out T>.eq(value: Any?): T? =
     this.isEqualTo(value)
 
-fun <T> StepVerifier.Step<T>.expectCompleteAndVerify(): Duration =
-    this.expectComplete()
-        .verify()
-
 inline fun <reified T : Throwable> assertThatExceptionOfType(): ThrowableTypeAssert<T> =
     Assertions.assertThatExceptionOfType(T::class.java)
 

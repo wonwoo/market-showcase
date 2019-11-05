@@ -2,11 +2,10 @@ package ml.wonwoo.remote.product
 
 import ml.wonwoo.remote.assertThatExceptionOfType
 import ml.wonwoo.remote.eq
-import ml.wonwoo.remote.expectCompleteAndVerify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
 
 @DataMongoTest
@@ -15,13 +14,10 @@ internal class MovieRepositoryTests(private val movieRepository: MovieRepository
     @Test
     fun `find by name test`() {
 
-        movieRepository.save(Movie(name = "testmovie", image = "http://test.com/1", genre = "SF"))
-            .block()
+        val movies = movieRepository.save(Movie(name = "testmovie", image = "http://test.com/1", genre = "SF"))
+            .thenMany(movieRepository.findByName("testmovie"))
 
-        val movies = movieRepository.findByName("testmovie")
-
-        StepVerifier
-            .create(movies)
+        movies.test()
             .assertNext {
 
                 it.apply {
@@ -33,7 +29,7 @@ internal class MovieRepositoryTests(private val movieRepository: MovieRepository
                 }
 
             }
-            .expectCompleteAndVerify()
+            .verifyComplete()
 
     }
 
@@ -41,16 +37,13 @@ internal class MovieRepositoryTests(private val movieRepository: MovieRepository
     @Test
     fun `find by name exception test`() {
 
-        movieRepository.save(Movie(name = "testmovie1", image = "http://test.com/1", genre = "SF"))
-            .block()
-
-        val movies = movieRepository.findByName("testmovie2")
+        val movies = movieRepository.save(Movie(name = "testmovie1", image = "http://test.com/1", genre = "SF"))
+            .thenMany(movieRepository.findByName("testmovie2"))
 
         assertThatExceptionOfType<AssertionError>()
             .isThrownBy {
 
-                StepVerifier
-                    .create(movies)
+                movies.test()
                     .expectError()
                     .verify()
 

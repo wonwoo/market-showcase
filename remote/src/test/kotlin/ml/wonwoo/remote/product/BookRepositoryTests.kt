@@ -2,11 +2,10 @@ package ml.wonwoo.remote.product
 
 import ml.wonwoo.remote.assertThatExceptionOfType
 import ml.wonwoo.remote.eq
-import ml.wonwoo.remote.expectCompleteAndVerify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
 @DataMongoTest
 internal class BookRepositoryTests(private val bookRepository: BookRepository) {
@@ -14,13 +13,11 @@ internal class BookRepositoryTests(private val bookRepository: BookRepository) {
     @Test
     fun `find by name test`() {
 
-        bookRepository.save(Book(name = "testbook", image = "http://test.com", author = "wonwoo"))
-            .block()
 
-        val books = bookRepository.findByName("testbook")
+        val books = bookRepository.save(Book(name = "testbook", image = "http://test.com", author = "wonwoo"))
+            .thenMany(bookRepository.findByName("testbook"))
 
-        StepVerifier
-            .create(books)
+        books.test()
             .assertNext {
 
                 it.apply {
@@ -32,23 +29,20 @@ internal class BookRepositoryTests(private val bookRepository: BookRepository) {
                 }
 
             }
-            .expectCompleteAndVerify()
+            .verifyComplete()
 
     }
 
     @Test
     fun `find by name exception test`() {
 
-        bookRepository.save(Book(name = "testbook1", image = "http://test.com", author = "wonwoo"))
-            .block()
-
-        val books = bookRepository.findByName("testbook2")
+        val books = bookRepository.save(Book(name = "testbook1", image = "http://test.com", author = "wonwoo"))
+            .thenMany(bookRepository.findByName("testbook2"))
 
         assertThatExceptionOfType<AssertionError>()
             .isThrownBy {
 
-                StepVerifier
-                    .create(books)
+                books.test()
                     .expectError()
                     .verify()
 
